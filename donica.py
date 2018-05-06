@@ -4,7 +4,7 @@ import os
 import webbrowser
 import smtplib
 
-# Make sure to install listen << pip install PyAudio
+
 def talkToMe(audio):
     print(audio)
     tts = gTTS(text=audio, lang='en')
