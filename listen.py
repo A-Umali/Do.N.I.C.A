@@ -1,15 +1,5 @@
 import speech_recognition as sr
-from gtts import gTTS
-import os
-import webbrowser
-import smtplib
 
-# Make sure to install listen << pip install PyAudio
-def talkToMe(audio):
-    print(audio)
-    tts = gTTS(text=audio, lang='en')
-    tts.save('audio.mp3')
-    os.system('mpg123 audio.mp3')
 #listens for commands
 
 def myCommand():
@@ -23,9 +13,9 @@ def myCommand():
 
     try:
         command = r.recognize_google(audio)
-        print("You said: " + command + "\n")
+        print("You said: " + command + "/n")
 
     #looping back to listen to commands
 
     except sr.UnknownValueError:
-        return command
+        (myCommand())
