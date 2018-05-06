@@ -1,31 +1,41 @@
 import speech_recognition as sr
 from gtts import gTTS
 import os
-import webbrowser
-import smtplib
+import Commands as cog
 
 
-def talkToMe(audio):
-    print(audio)
-    tts = gTTS(text=audio, lang='en')
-    tts.save('audio.mp3')
-    os.system('mpg123 audio.mp3')
-#listens for commands
+def speak(audioString):
+    print(audioString)
+    tts = gTTS(text=audioString, lang='en')
+    tts.save("audio.mp3")
+    os.system("mpg321 audio.mp3")
 
-def myCommand():
+def recordAudio():
+    # Recording Audio
     r = sr.Recognizer()
-
     with sr.Microphone() as source:
-        print("Donica is ready!")
-        r.pause_threshold = 1
-        r.adjust_for_ambient_noise(source, duration=1)
+        print("Donica is prepared")
         audio = r.listen(source)
-
+    # Speech Recognition using Google Speeche Recognizer
+    data = " "
     try:
-        command = r.recognize_google(audio)
-        print("You said: " + command + "\n")
-
-    #looping back to listen to commands
-
+        # Uses default API
+        print("debug")
+        data = r.recognize_google(audio)
+        print("You said: " + data)
+        exitProtocol(data)
     except sr.UnknownValueError:
-        return command
+        print("Google Speech Recognition couldn't recognize what you said")
+
+def beginProtocol(data):
+    if data in str(cog.COGNATE_DONICA):
+        recordAudio()
+
+def exitProtocol(data):
+    variation = str(cog.COGNATE_EXIT) + " " + str(cog.COGNATE_DONICA)
+    if data in str(cog.COGNATE_EXIT) or data in variation:
+        print("Donica is shutting down")
+        exit()
+
+
+recordAudio()
