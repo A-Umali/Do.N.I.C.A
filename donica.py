@@ -1,41 +1,19 @@
 import speech_recognition as sr
-from gtts import gTTS
-import os
-import Commands as cog
 
+# Record Audio
+r = sr.Recognizer()
+with sr.Microphone() as source:
+    print("Say something!")
+    r.adjust_for_ambient_noise(source)
+    audio = r.listen(source)
 
-def speak(audioString):
-    print(audioString)
-    tts = gTTS(text=audioString, lang='en')
-    tts.save("audio.mp3")
-    os.system("mpg321 audio.mp3")
-
-def recordAudio():
-    # Recording Audio
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        print("Donica is prepared")
-        audio = r.listen(source)
-    # Speech Recognition using Google Speeche Recognizer
-    data = " "
-    try:
-        # Uses default API
-        print("debug")
-        data = r.recognize_google(audio)
-        print("You said: " + data)
-        exitProtocol(data)
-    except sr.UnknownValueError:
-        print("Google Speech Recognition couldn't recognize what you said")
-
-def beginProtocol(data):
-    if data in str(cog.COGNATE_DONICA):
-        recordAudio()
-
-def exitProtocol(data):
-    variation = str(cog.COGNATE_EXIT) + " " + str(cog.COGNATE_DONICA)
-    if data in str(cog.COGNATE_EXIT) or data in variation:
-        print("Donica is shutting down")
-        exit()
-
-
-recordAudio()
+# Speech recognition using Google Speech Recognition
+try:
+    # for testing purposes, we're just using the default API key
+    # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
+    # instead of `r.recognize_google(audio)`
+    print("You said: " + r.recognize_google(audio))
+except sr.UnknownValueError:
+    print("Google Speech Recognition could not understand audio")
+except sr.RequestError as e:
+    print("Could not request results from Google Speech Recognition service; {0}".format(e))
