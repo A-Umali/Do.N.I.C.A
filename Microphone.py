@@ -4,7 +4,7 @@ from six.moves import queue
 # This is getting microhpohone input
 
 RATE = 16000
-CHUNK = int(RATE / 10)  # 100ms
+CHUNK = int(RATE / 10)  # 1000ms
 
 class MicrophoneStream(object):
     def __init__(self, rate, chunk):
