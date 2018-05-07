@@ -34,9 +34,15 @@ def donica():
                     for content in audio_generator)
         # Now, you can speak
         responses = client.streaming_recognize(streaming_config, requests)
-
+        print("working")
         # Now, put the transcription responses to use.
         Listening.listen_print_loop(responses)
+
+def idle(idle = True):
+    if (idle is False):
+        donica()
+    else:
+        print("Idle Mode")
 
 if __name__ == '__main__':
     donica()

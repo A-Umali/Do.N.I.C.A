@@ -1,6 +1,6 @@
 import sys
 import re
-import Commands
+import Response
 
 # This is a loop for getting responses
 
@@ -13,15 +13,17 @@ def listen_print_loop(responses):
 
         # The `results` list is consecutive
         result = response.results[0]
-        if not result.alternatives:
-            continue
 
-        # Display the transcription of the top alternative.\
-        """ Will delete the code below soon for unnecessary reason """
+        # Display the transcription of the top alternative.
+        # This is for more accuracy
         transcript = result.alternatives[0].transcript
 
         overwrite_chars = ' ' * (num_chars_printed - len(transcript))
 
+        if not result.alternatives:
+            continue
+
+        # This is what streamline is
         if not result.is_final:
             sys.stdout.write(transcript + overwrite_chars + '\r')
             sys.stdout.flush()
@@ -31,11 +33,8 @@ def listen_print_loop(responses):
         else:
             print(transcript + overwrite_chars)
 
-            # Exit recognition if any of the transcribed phrases could be
-            # one of our keywords.
-            if re.search(r'\b(thank you|exit|goodbye)\b', transcript, re.I):
-                print('Exiting..')
-                break
+            # Looking for logic
+            Response.commandlist(transcript)
 
             num_chars_printed = 0
 
