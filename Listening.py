@@ -1,11 +1,13 @@
 import sys
 import re
+import Commands
 
 # This is a loop for getting responses
 
 def listen_print_loop(responses):
     num_chars_printed = 0
     for response in responses:
+        # Continuing if there is no response
         if not response.results:
             continue
 
@@ -31,7 +33,7 @@ def listen_print_loop(responses):
 
             # Exit recognition if any of the transcribed phrases could be
             # one of our keywords.
-            if re.search(r'\b(exit|quit)\b', transcript, re.I):
+            if re.search(r'\b(thank you|exit|goodbye)\b', transcript, re.I):
                 print('Exiting..')
                 break
 
