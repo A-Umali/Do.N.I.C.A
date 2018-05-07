@@ -3,7 +3,7 @@
 # Formalities of the program
 # name2 in str(name):
 COGNATE_DONICA = ["donica", "doneica", "downica", "dunica"]
-COGNATE_EXIT = ["thank you ", "stop ", "shut up ", "be quiet"]
+COGNATE_EXIT = ["thank you ", "stop ", "shut up ", "be quiet", "nevermind"]
 
 
 # Custom Lines
