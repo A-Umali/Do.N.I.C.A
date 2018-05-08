@@ -1,3 +1,5 @@
 google-cloud-speech>=0.34.0
 pyaudio>=0.2.11
-suds-jurko>=0.6
+boto3
+awscli
+pygame

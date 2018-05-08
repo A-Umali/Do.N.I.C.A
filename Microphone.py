@@ -53,7 +53,6 @@ class MicrophoneStream(object):
             if chunk is None:
                 return
             data = [chunk]
-
             # Now consume whatever other data's still buffered.
             while True:
                 try:
