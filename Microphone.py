@@ -6,6 +6,7 @@ from six.moves import queue
 RATE = 16000
 CHUNK = int(RATE / 10)  # 1000ms
 
+
 class MicrophoneStream(object):
     def __init__(self, rate, chunk):
         self._rate = rate

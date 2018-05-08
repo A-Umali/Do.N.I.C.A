@@ -2,6 +2,7 @@ import re
 import Response
 import Speech
 
+
 def commandlist(transcript):
     if re.search(r'\b(oh my god)\b', transcript, re.I):
         print("what do you mean")

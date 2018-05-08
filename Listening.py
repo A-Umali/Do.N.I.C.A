@@ -1,7 +1,7 @@
 import sys
 import re
 import Command
-import Speech
+
 
 # This is a loop for getting responses
 def listen_print_loop(responses):
@@ -17,7 +17,7 @@ def listen_print_loop(responses):
         transcript = result.alternatives[0].transcript
 
         overwrite_chars = ' ' * (num_chars_printed - len(transcript))
-        if (idle is False):
+        if idle is False:
 
             # This is what streamline is
             if not result.is_final:
@@ -36,7 +36,7 @@ def listen_print_loop(responses):
                 Command.commandlist(transcript)
 
         else:
-            if re.search(r'\b(donica|doneica|downica|dunica|stonica|danica|danica|donika)\b', transcript, re.I):
+            if re.search(r'\b(donica|doneica|downica|dunica|stonica|danica|donika)\b', transcript, re.I):
                 print("Donica has awaken")
                 idle = False
 
