@@ -1,6 +1,7 @@
 import re
 import Response
 from text_speech import Speech
+import donica
 
 
 def commandlist(transcript):
@@ -22,3 +23,5 @@ def commandlist(transcript):
             Speech.speak(Response.SEAN)
         if re.search(r'\b(Tell me a quote)\b', transcript, re.I):
             Speech.speak('If you need toes, look at your feet')
+        if re.search(r'\b(Good bye|bye|thank you|shut up|be quiet)', transcript, re.I):
+                breakpoint()

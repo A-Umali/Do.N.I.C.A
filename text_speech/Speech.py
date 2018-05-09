@@ -1,6 +1,11 @@
 import boto3
 import os
+import mad
+import tempfile as tf
+import subprocess
+import wave
 from tempfile import gettempdir
+
 
 
 def speak(text):
@@ -20,4 +25,5 @@ def speak(text):
 
     except PermissionError as e:
         print(e)
+
 

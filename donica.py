@@ -11,10 +11,11 @@ from user_recog import listen_mic, record_mic
 """success rate from other API sources"""
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="service_account.json"
+resume = False
 
 
 # Handling long codes into this file
-def donica(audio_src):
+def donica():
     language_code = 'en-US'
 
     client = speech.SpeechClient()
@@ -33,16 +34,17 @@ def donica(audio_src):
 
     # Pause
     with mic_manager as stream:
-        resume = False
         while True:
             audio_generator = stream.generator()
-            requests = (types.cloud_speech_pb2.StreamingRecognizeRequest(audio_content=content) for content in audio_generator)
+            requests = (types.cloud_speech_pb2.StreamingRecognizeRequest(audio_content=content)
+                        for content in audio_generator)
             # Now, you can speak
             responses = client.streaming_recognize(streaming_config, requests)
             try:
                 print("talk")
                 # Loop to access Donica
                 listen_mic.listen_print_loop(responses)
+                break
             except grpc.RpcError as e:
                 if e.code() not in (grpc.StatusCode.INVALID_ARGUMENT, grpc.StatusCode.OUT_OF_RANGE):
                     raise
@@ -54,13 +56,7 @@ def donica(audio_src):
                     if 'maximum allowed stream duration' not in details:
                         raise
                 print('Resuming')
-                resume = True
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--audio_src', help='File to simulate streaming of.')
-    args = parser.parse_args()
-    donica(args.audio_src)
+    donica()
