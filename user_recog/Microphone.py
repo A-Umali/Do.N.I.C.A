@@ -1,7 +1,7 @@
 import pyaudio
 from six.moves import queue
 
-# This is getting microhpohone input
+# This is getting microphone input
 
 RATE = 16000
 CHUNK = int(RATE / 10)  # 1000ms

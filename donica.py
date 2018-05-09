@@ -2,8 +2,7 @@ import os
 from google.cloud import speech
 from google.cloud.speech import enums
 from google.cloud.speech import types
-import Microphone
-import Listening
+from user_recog import Microphone, Listening
 
 """This is Google's Cloud Speech API for reference because"""
 """it streamlines speech to text smoothly and has a more"""
@@ -25,15 +24,14 @@ def donica():
 
     # Have to be online to use this service and connected to Google Account
     # Might make another one for offline mode
+    # PAUSE
     with Microphone.MicrophoneStream(Microphone.RATE, Microphone.CHUNK) as stream:
         audio_generator = stream.generator()
         requests = (types.cloud_speech_pb2.StreamingRecognizeRequest(audio_content=content) for content in audio_generator)
         # Now, you can speak
         responses = client.streaming_recognize(streaming_config, requests)
-        print("working")
+        print("talk")
         # Loop to access Donica
-
-        # Now, put the transcription responses to use.
         Listening.listen_print_loop(responses)
 
 
