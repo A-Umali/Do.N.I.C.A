@@ -20,3 +20,5 @@ def commandlist(transcript):
             Speech.speak(Response.COUNTRY)
         if re.search(r'\b(Who has the biggest nose)', transcript, re.I):
             Speech.speak(Response.SEAN)
+        if re.search(r'\b(Tell me a quote)\b', transcript, re.I):
+            Speech.speak('If you need toes, look at your feet')

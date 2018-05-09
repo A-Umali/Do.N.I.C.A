@@ -5,3 +5,4 @@ awscli
 pygame
 playsound
 precise-runner
+six
