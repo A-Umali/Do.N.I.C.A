@@ -6,5 +6,5 @@ better results and faster speech analyzing with impressive
 streamline capabilities
 
 Text to Speech:
-I am using CereProc's CereVoice Cloud API for me to enable
-"realisitic" voices for better results
+I am using Amazon's Polly text so speech API for more realistic voices for
+me to test

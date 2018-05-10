@@ -4,5 +4,4 @@ boto3
 awscli
 pygame
 playsound
-precise-runner
-six
+pydispatch

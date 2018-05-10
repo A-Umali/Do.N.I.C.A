@@ -3,60 +3,60 @@ from google.cloud import speech
 from google.cloud.speech import enums
 from google.cloud.speech import types
 import grpc
-import argparse
-from user_recog import listen_mic, record_mic
-
-"""This is Google's Cloud Speech API for reference because"""
-"""it streamlines speech to text smoothly and has a more"""
-"""success rate from other API sources"""
-
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="service_account.json"
-resume = False
+from Configure import config
+from user_recog.mic_record import MicrophoneStream
+from user_recog.mic_listen import ListenLoop
+import speech_recognition as sr
+from event.event_dispatch import EventDispatcher
+from Assistant import Assistant
 
 
-# Handling long codes into this file
-def donica():
-    language_code = 'en-US'
+class Donica:
+    def __init__(self):
+        self.status = False
+        self.active = False
+        self.events = EventDispatcher()
+        self.c = config
 
-    client = speech.SpeechClient()
-    config = types.cloud_speech_pb2.RecognitionConfig(
-        encoding=enums.RecognitionConfig.AudioEncoding.LINEAR16,
-        sample_rate_hertz=record_mic.RATE,
-        language_code=language_code,
-        max_alternatives=1,
-        enable_word_time_offsets=True)
-    streaming_config = types.cloud_speech_pb2.StreamingRecognitionConfig(config=config, interim_results=True)
+        """ This is google's cloud speech API being in use """
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
+        language_code = 'en-US'
+        self.google_speech_client = speech.SpeechClient()
+        self.google_config = types.cloud_speech_pb2.RecognitionConfig(
+            encoding=enums.RecognitionConfig.AudioEncoding.LINEAR16,
+            sample_rate_hertz=MicrophoneStream.RATE,
+            language_code=language_code,
+            max_alternatives=1,
+            enable_word_time_offsets=True)
+        self.google_stream_config = types.cloud_speech_pb2.StreamingRecognitionConfig(config=self.google_config,
+                                                                                      interim_results=True)
 
-    # Have to be online to use this service and connected to Google Account
-    # Might make another one for offline mode
+    def initiate(self):
+        print('Donica is loading up, wait for another print line')
+        # Put check update method here
+        if self.c.config.getboolean("SYSTEM", "wake_up_engine"):
+            self.status = False
+            self.active = False
+        if self.c.config.getboolean("SYSTEM", "always_on_engine"):
+            self.status = False
+            self.active = False
 
-    mic_manager = record_mic.MicrophoneStream(record_mic.RATE, int(record_mic.RATE / 10))
+        # Have to be online to use this service and connected to Google Account
+        # Might make another one for offline mode
 
-    # Pause
-    with mic_manager as stream:
-        while True:
+        mic_manager = MicrophoneStream(MicrophoneStream.RATE, int(MicrophoneStream.RATE / 10))
+        r = sr.Recognizer()
+        assistant_online = Assistant(mic_manager, self.events)
+        assistant_offline = r.listen()
+        # Will put a pause on this when not active
+        with mic_manager as stream:
             audio_generator = stream.generator()
             requests = (types.cloud_speech_pb2.StreamingRecognizeRequest(audio_content=content)
                         for content in audio_generator)
             # Now, you can speak
-            responses = client.streaming_recognize(streaming_config, requests)
-            try:
-                print("talk")
-                # Loop to access Donica
-                listen_mic.listen_print_loop(responses)
-                break
-            except grpc.RpcError as e:
-                if e.code() not in (grpc.StatusCode.INVALID_ARGUMENT, grpc.StatusCode.OUT_OF_RANGE):
-                    raise
-                details = e.details()
-                if e.code() is grpc.StatusCode.INVALID_ARGUMENT:
-                    if 'deadline too short' not in details:
-                        raise
-                else:
-                    if 'maximum allowed stream duration' not in details:
-                        raise
-                print('Resuming')
+            responses = self.google_speech_client.streaming_recognize(self.google_stream_config, requests)
+            assistant_online.main(self, responses)
 
 
 if __name__ == '__main__':
-    donica()
+    Donica().initiate()

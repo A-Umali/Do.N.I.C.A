@@ -22,23 +22,16 @@ Example usage:
 
 # [START import_libraries]
 from __future__ import division
-
-import re
-import sys
-
-from google.cloud import speech
-from google.cloud.speech import enums
-from google.cloud.speech import types
 import pyaudio
 from six.moves import queue
-# [END import_libraries]
 
 # Audio recording parameters
-RATE = 16000
-CHUNK = int(RATE / 10)  # 100ms
 
 
 class MicrophoneStream(object):
+    RATE = 16000
+    CHUNK = int(RATE / 10)  # 100ms
+
     """Opens a recording stream as a generator yielding the audio chunks."""
     def __init__(self, rate, chunk):
         self._rate = rate
