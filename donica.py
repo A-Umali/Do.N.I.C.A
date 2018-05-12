@@ -2,13 +2,14 @@ import os
 from google.cloud import speech
 from google.cloud.speech import enums
 from google.cloud.speech import types
-import grpc
 from Configure import config
-from user_recog.mic_record import MicrophoneStream
-from user_recog.mic_listen import ListenLoop
-import speech_recognition as sr
+from user_recog.Microphone import MicrophoneStream, \
+    ResumableMicrophoneStream,\
+    SimulatedMicrophoneStream
 from event.event_dispatch import EventDispatcher
-from Assistant import Assistant
+from user_recog import text_manager
+import argparse
+from Modules import mods
 
 
 class Donica:
@@ -17,7 +18,6 @@ class Donica:
         self.active = False
         self.events = EventDispatcher()
         self.c = config
-
         """ This is google's cloud speech API being in use """
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
         language_code = 'en-US'
@@ -30,6 +30,9 @@ class Donica:
             enable_word_time_offsets=True)
         self.google_stream_config = types.cloud_speech_pb2.StreamingRecognitionConfig(config=self.google_config,
                                                                                       interim_results=True)
+        mods.find_mods()
+        mods.list_mods()
+
 
     def initiate(self):
         print('Donica is loading up, wait for another print line')
@@ -43,19 +46,17 @@ class Donica:
 
         # Have to be online to use this service and connected to Google Account
         # Might make another one for offline mode
-
         mic_manager = MicrophoneStream(MicrophoneStream.RATE, int(MicrophoneStream.RATE / 10))
-        r = sr.Recognizer()
-        assistant_online = Assistant(mic_manager, self.events)
-        assistant_offline = r.listen()
+
         # Will put a pause on this when not active
         with mic_manager as stream:
-            audio_generator = stream.generator()
-            requests = (types.cloud_speech_pb2.StreamingRecognizeRequest(audio_content=content)
-                        for content in audio_generator)
-            # Now, you can speak
-            responses = self.google_speech_client.streaming_recognize(self.google_stream_config, requests)
-            assistant_online.main(self, responses)
+            while True:
+                audio_generator = stream.generator()
+                requests = (types.cloud_speech_pb2.StreamingRecognizeRequest(audio_content=content)
+                            for content in audio_generator)
+                # Now, you can speak
+                responses = self.google_speech_client.streaming_recognize(self.google_stream_config, requests)
+                text_manager.get_text_to_speech_google(responses)
 
 
 if __name__ == '__main__':

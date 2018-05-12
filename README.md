@@ -1,6 +1,6 @@
-Like Google Assistant and Amazon Alexa but with custom settings.
+**_Like Google Assistant and Amazon Alexa but with custom settings.**_
 
-Speech Recognition(Speech to Text):
+**Speech Recognition(Speech to Text):**
 I have used Google's Cloud Speech API for me to utilize for
 better results and faster speech analyzing with impressive
 streamline capabilities
