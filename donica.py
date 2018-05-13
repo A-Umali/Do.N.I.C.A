@@ -12,7 +12,7 @@ class Donica:
         self.sleep_status = True
         self.active_status = False
         """ This is google's cloud speech API being in use """
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:/Users/Redd/Downloads/service_account.json"
         self.google_speech_client = speech.SpeechClient()
         self.google_config = types.cloud_speech_pb2.RecognitionConfig(
             encoding=enums.RecognitionConfig.AudioEncoding.LINEAR16,
