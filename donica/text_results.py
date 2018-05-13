@@ -1,6 +1,6 @@
 import grpc
 import sys
-import text_sorter
+from donica import text_sorter
 
 
 # Getting mic stream audio

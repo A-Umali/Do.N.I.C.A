@@ -1,4 +1,4 @@
-from encode_speech import Speech
+from donica.encode_speech import Speech
 import re
 
 # Looking for keywords from modules

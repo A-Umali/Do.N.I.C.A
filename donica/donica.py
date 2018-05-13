@@ -2,9 +2,8 @@ import os
 from google.cloud import speech
 from google.cloud.speech import enums
 from google.cloud.speech import types
-from transcribe_mic import MicrophoneStream
-import text_results
-import sys
+from donica.transcribe_mic import MicrophoneStream
+from donica import text_results
 
 
 class Donica:
@@ -41,6 +40,3 @@ class Donica:
                 responses = self.google_speech_client.streaming_recognize(self.google_stream_config, requests)
                 text_results.get_text_to_speech_google(responses)
 
-
-if __name__ == '__main__':
-    Donica().initiate()
