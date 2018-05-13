@@ -1,11 +1,8 @@
 import boto3
 import os
-import subprocess
-import wave
 from tempfile import gettempdir
 from pygame import mixer
 import random
-import time
 
 
 class Speech:

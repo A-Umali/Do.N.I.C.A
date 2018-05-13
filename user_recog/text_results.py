@@ -1,4 +1,3 @@
-import Configure
 import grpc
 import sys
 from user_recog import text_sorter
@@ -72,3 +71,4 @@ def _record_keeper(responses, stream):
 
 def duration_to_secs(duration):
         return duration.seconds + (duration.nanos / float(1e9))
+
