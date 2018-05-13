@@ -1,6 +1,6 @@
 import grpc
 import sys
-from user_recog import text_sorter
+import text_sorter
 
 
 # Getting mic stream audio

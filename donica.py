@@ -2,8 +2,9 @@ import os
 from google.cloud import speech
 from google.cloud.speech import enums
 from google.cloud.speech import types
-from user_recog.Microphone import MicrophoneStream
-from user_recog import text_results
+from transcribe_mic import MicrophoneStream
+import text_results
+import sys
 
 
 class Donica:
