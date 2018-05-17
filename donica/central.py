@@ -6,9 +6,6 @@ from donica.transcribe_mic import MicrophoneStream
 from donica import text_results
 
 
-""" This will be the main file for the program to process through """
-
-
 class Central:
     def __init__(self):
         print('Initializing first local variables')
@@ -29,22 +26,21 @@ class Central:
         print('Donica is loading up, wait for another print line')
         mic_manager = MicrophoneStream(MicrophoneStream.RATE, int(MicrophoneStream.RATE / 10))
         with mic_manager as stream:
-            try:
-                while True:
-                    # Change this to False when I have
-                    # wake word setup
-                    if self.active_status is True:
-                        # This is Wake word or idle mode
-                        print('Get Wake word')
-                    elif self.active_status is False:
-                        mic_generator = stream.generator()
-                        requests = (types.cloud_speech_pb2.StreamingRecognizeRequest(audio_content=content)
-                                    for content in mic_generator)
-                        responses = self.google_speech_client.streaming_recognize(self.google_stream_config, requests)
+            while True:
+                # Change this to False when I have
+                # wake word setup
+                if self.active_status is True:
+                    # This is Wake word or idle mode
+                    print('Get Wake word')
+                elif self.active_status is False:
+                    mic_generator = stream.generator()
+                    requests = (types.cloud_speech_pb2.StreamingRecognizeRequest(audio_content=content)
+                                for content in mic_generator)
+                    responses = self.google_speech_client.streaming_recognize(self.google_stream_config,
+                                                                              requests)
+
+                    try:
                         text_results.get_text_to_speech_google(responses)
-            except Exception as e:
-                raise e('Error with loop')
+                    except Exception as e:
+                        raise e
 
-
-if __name__ == '__main__':
-    Central().initiate()

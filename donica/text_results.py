@@ -3,8 +3,9 @@ import sys
 from donica import text_sorter
 
 
-# Getting mic stream audio
+# Getting mic stream audio into text
 def get_text_to_speech_google(responses):
+    try:
             print("talk")
             # text_rec
             num_chars_printed = 0
@@ -26,14 +27,25 @@ def get_text_to_speech_google(responses):
                 else:
                     get_mic = transcript+overwrite_chars
                     text_sorter.analyze_speech(get_mic)
+
                     num_chars_printed = 0
+    except grpc.RpcError as e:
+        if e.code() not in (grpc.StatusCode.INVALID_ARGUMENT,
+                            grpc.StatusCode.OUT_OF_RANGE):
+            raise e
+        details = e.details()
+        if e.code() == grpc.StatusCode.INVALID_ARGUMENT:
+            if 'deadline too short' not in details:
+                raise e
+        else:
+            if 'maximum allowed stream duration' not in details:
+                raise e
 
 
 def continuous_text_to_speech(responses, stream, resume):
     try:
-        resume = False
-        with_results = (r for r in responses if (
-        r.results and r.results[0].alternatives))
+        with_results = (r for r in responses if(
+                r.results and r.results[0].alternatives))
         get_text_to_speech_google(
             _record_keeper(with_results, stream))
     except grpc.RpcError as e:
@@ -68,6 +80,7 @@ def _record_keeper(responses, stream):
                 stream.on_transcribe(duration_to_secs(
                     top_alternative.words[-1].end_time))
             yield r
+
 
 def duration_to_secs(duration):
         return duration.seconds + (duration.nanos / float(1e9))

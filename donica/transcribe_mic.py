@@ -103,8 +103,9 @@ class ResumableMicrophoneStream(MicrophoneStream):
     """Opens a recording stream as a generator yielding the audio chunks."""
     def __init__(self, rate, chunk_size, max_replay_secs=5):
         super(ResumableMicrophoneStream, self).__init__(rate, chunk_size)
+        self._chunk_size = chunk_size
         self._max_replay_secs = max_replay_secs
-
+        self._num_channels = 16
         # Some useful numbers
         # 2 bytes in 16 bit samples
         self._bytes_per_sample = 2 * self._num_channels

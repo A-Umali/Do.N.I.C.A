@@ -5,19 +5,16 @@ from pygame import mixer
 import random
 
 
-class Speech:
-    def __init__(self, events):
-        print("Text To Speech: Amazon Initialized")
-        self.events = events
+class Speech(object):
+    def __init__(self):
+        self.session = boto3.Session(profile_name="AUmali")
+        self.polly = self.session.client("polly")
 
-    @staticmethod
-    def speak(text):
-        session = boto3.Session(profile_name="AUmali")
-        polly = session.client("polly")
+    def send_speak(self, text):
 
         r1 = random.randint(1, 10000000)
         r2 = random.randint(1, 10000000)
-        spoken_text = polly.synthesize_speech(Text=text,
+        spoken_text = self.polly.synthesize_speech(Text=text,
                                                    OutputFormat="mp3",
                                                    VoiceId="Amy")
         try:
@@ -26,12 +23,9 @@ class Speech:
             with open(output, 'wb') as f:
                 f.write(spoken_text['AudioStream'].read())
                 f.close()
-
             mixer.init()
             mixer.pause()
             mixer.music.load(output)
             mixer.music.play()
-
         except PermissionError as e:
             print(e)
-
