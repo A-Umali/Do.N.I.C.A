@@ -3,10 +3,12 @@ import os
 from tempfile import gettempdir
 from pygame import mixer
 import random
+import time
 
 
 class Speech(object):
     def __init__(self):
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:/Users/Redd/Downloads/service_account.json"
         self.session = boto3.Session(profile_name="AUmali")
         self.polly = self.session.client("polly")
 
@@ -19,13 +21,27 @@ class Speech(object):
                                                    VoiceId="Amy")
         try:
             # This is a short fix, should make another one later
-            output = os.path.join(gettempdir(), str(r1) + str(r2) + 'output.mp3')
+            output = os.path.join(gettempdir(), 'output.mp3')
             with open(output, 'wb') as f:
                 f.write(spoken_text['AudioStream'].read())
                 f.close()
+
             mixer.init()
-            mixer.pause()
             mixer.music.load(output)
             mixer.music.play()
+            time.sleep(5)
+            print('Stopped')
+
         except PermissionError as e:
             print(e)
+
+    @staticmethod
+    def speech_active():
+        return mixer.music.get_busy()
+"""
+    @staticmethod
+    def test_wait(file):
+        audio_file = eyed3.load(file)
+        wait_period = audio_file.info.time_secs
+        time.sleep(wait_period+2)
+"""

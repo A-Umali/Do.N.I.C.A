@@ -1,12 +1,10 @@
 import pkgutil
 import donica.modules as folder
-from donica.encode_speech import Speech
 
 
 class ModuleRouter(object):
     def __init__(self):
         self.modules = self.get_modules()
-        self.speech = Speech()
 
     @classmethod
     def get_modules(cls):
@@ -21,26 +19,27 @@ class ModuleRouter(object):
             except Exception as e:
                 raise e
             else:
-                if hasattr(mod, 'WORDS'):
-                    print('Found module %s with words: %r', name, mod.WORDS)
+                if hasattr(mod, 'TITLE'):
+                    print('MODULE ROUTER: Found module {} with title: {}'.format(name, mod.TITLE))
                     modules.append(mod)
                 else:
-                    print('Skipping modules because of error')
+                    print('MODULE ROUTER: Skipping modules because of error')
 
         modules.sort(key=lambda mods: mod.PRIORITY if hasattr(mods, 'PRIORITY')
                      else 0, reverse=True)
         return modules
 
-    def query(self, texts):
+    def query(self, titles, message):
         for module in self.modules:
-            for text in texts:
-                if module.is_valid(text):
+            for title in titles:
+                if module.is_valid(title):
                     try:
-                        speaker_msg = module.handle(text)
-                        self.speech.send_speak(speaker_msg)
+                        module.handle(message)
                     except Exception:
-                        print('I had trouble with that operation')
+                        print('MODULE ROUTER: I had trouble with that operation')
                     else:
-                        print('Handling of phrase %s by module %s completed', text, module.__name__)
+                        print('MODULE ROUTER: Handling of phrase {} by module {} completed'.format(title,
+                                                                                                   module.__name__))
                     finally:
                         return
+

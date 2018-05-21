@@ -1,19 +1,28 @@
 import grpc
 import sys
-from donica import text_sorter
+import dialogflow_v2 as dialogflow
+from donica.encode_speech import Speech
+from donica.ModuleRouter import ModuleRouter
+import re
 
 
-# Getting mic stream audio into text
-def get_text_to_speech_google(responses):
-    try:
-            print("talk")
-            # text_rec
+class TextResult:
+    def __init__(self):
+        self.session_client = dialogflow.SessionsClient()
+        self.session = self.session_client.session_path("donica-d6a80", "38d9b5565227fa8e67d1cdf23cd82cae5dd9d782")
+        self.speech = Speech()
+        self.module = ModuleRouter()
+
+    def get_text_to_speech_google(self, responses, get_stream):
+        try:
             num_chars_printed = 0
+
             for response in responses:
                 if not response.results:
                     continue
 
                 result = response.results[0]
+
                 if not result.alternatives:
                     continue
 
@@ -25,63 +34,33 @@ def get_text_to_speech_google(responses):
                     sys.stdout.flush()
                     num_chars_printed = len(transcript)
                 else:
-                    get_mic = transcript+overwrite_chars
-                    text_sorter.analyze_speech(get_mic)
+                    texts = transcript+overwrite_chars
+                    text_input = dialogflow.types.session_pb2.TextInput(text=texts,
+                                                                        language_code='en')
+                    query_input = dialogflow.types.session_pb2.QueryInput(text=text_input)
 
-                    num_chars_printed = 0
-    except grpc.RpcError as e:
-        if e.code() not in (grpc.StatusCode.INVALID_ARGUMENT,
-                            grpc.StatusCode.OUT_OF_RANGE):
-            raise e
-        details = e.details()
-        if e.code() == grpc.StatusCode.INVALID_ARGUMENT:
-            if 'deadline too short' not in details:
+                    dialog = self.session_client.detect_intent(session=self.session,
+                                                               query_input=query_input)
+                    get_text = dialog.query_result.query_text
+                    print('Query text: {}'.format(get_text))
+                    intent_name = dialog.query_result.intent.display_name
+                    self.module.query(intent_name.split(), get_text)
+                    print('Fulfillment text: {}'.format(intent_name))
+                    print('Response: {}'.format(dialog.query_result.fulfillment_text))
+                    if re.search('exit', intent_name, re.I):
+                        return get_stream.closed
+                    self.speech.send_speak(dialog.query_result.fulfillment_text)
+
+        except grpc.RpcError as e:
+            if e.code() not in (grpc.StatusCode.INVALID_ARGUMENT,
+                                grpc.StatusCode.OUT_OF_RANGE):
                 raise e
-        else:
-            if 'maximum allowed stream duration' not in details:
-                raise e
+            details = e.details()
+            if e.code() == grpc.StatusCode.INVALID_ARGUMENT:
+                if 'deadline too short' not in details:
+                    raise e
+            else:
+                if 'maximum allowed stream duration' not in details:
+                    raise e
 
-
-def continuous_text_to_speech(responses, stream, resume):
-    try:
-        with_results = (r for r in responses if(
-                r.results and r.results[0].alternatives))
-        get_text_to_speech_google(
-            _record_keeper(with_results, stream))
-    except grpc.RpcError as e:
-        if e.code() not in (grpc.StatusCode.INVALID_ARGUMENT,
-                            grpc.StatusCode.OUT_OF_RANGE):
-            raise
-        details = e.details()
-        if e.code() == grpc.StatusCode.INVALID_ARGUMENT:
-            if 'deadline too short' not in details:
-                raise
-        else:
-            if 'maximum allowed stream duration' not in details:
-                raise
-
-        print('Resuming..')
-        resume = True
-
-
-def _record_keeper(responses, stream):
-        """Calls the stream's on_transcribe callback for each final response.
-        Args:
-            responses - a generator of responses. The responses must already be
-                filtered for ones with results and alternatives.
-            stream - a ResumableMicrophoneStream.
-        """
-        for r in responses:
-            result = r.results[0]
-            if result.is_final:
-                top_alternative = result.alternatives[0]
-                # Keep track of what transcripts we've received, so we can resume
-                # intelligently when we hit the deadline
-                stream.on_transcribe(duration_to_secs(
-                    top_alternative.words[-1].end_time))
-            yield r
-
-
-def duration_to_secs(duration):
-        return duration.seconds + (duration.nanos / float(1e9))
 
