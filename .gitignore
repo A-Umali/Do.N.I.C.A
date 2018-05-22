@@ -1,7 +1,7 @@
 ### JetBrains template
 
 *.iml
-.idea/
+.idea
 
 ### Remove personal config
 
