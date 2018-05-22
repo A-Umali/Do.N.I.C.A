@@ -1,0 +1,9 @@
+### JetBrains template
+
+*.iml
+.idea/
+
+### Remove personal config
+
+service-account.json
+donica_windows.ppn
