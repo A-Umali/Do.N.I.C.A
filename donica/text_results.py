@@ -49,6 +49,8 @@ class TextResult:
                     print('Response: {}'.format(dialog.query_result.fulfillment_text))
                     if re.search('exit', intent_name, re.I):
                         return get_stream.closed
+                    if re.search('emergency-exit', intent_name, re.I):
+                        sys.exit(0)
                     self.speech.send_speak(dialog.query_result.fulfillment_text)
 
         except grpc.RpcError as e:

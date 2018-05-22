@@ -9,7 +9,7 @@ dict = {}
 
 def get_drives():
     c = Config()
-    get_device = c.config.get('DEFAULT', 'DEVICE')
+    get_device = c.device_type
     if re.search('WINDOWS', get_device, re.I):
         response = os.popen("wmic localdisk get caption")
         list_one = []

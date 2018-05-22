@@ -1,9 +1,10 @@
 import boto3
 import os
 from tempfile import gettempdir
-from pygame import mixer
+import pygame
 import random
 import time
+import sys
 
 
 class Speech(object):
@@ -15,7 +16,6 @@ class Speech(object):
     def send_speak(self, text):
 
         r1 = random.randint(1, 10000000)
-        r2 = random.randint(1, 10000000)
         spoken_text = self.polly.synthesize_speech(Text=text,
                                                    OutputFormat="mp3",
                                                    VoiceId="Amy")
@@ -25,19 +25,21 @@ class Speech(object):
             with open(output, 'wb') as f:
                 f.write(spoken_text['AudioStream'].read())
                 f.close()
+            pygame.mixer.init()
+            pygame.mixer.music.load(output)
+            pygame.mixer.music.play()
+            while pygame.mixer.music.get_busy() is True:
+                print('busy')
+                continue
+            pygame.quit()
 
-            mixer.init()
-            mixer.music.load(output)
-            mixer.music.play()
-            time.sleep(5)
-            print('Stopped')
 
         except PermissionError as e:
             print(e)
 
     @staticmethod
     def speech_active():
-        return mixer.music.get_busy()
+        return pygame.mixer.music.get_busy()
 """
     @staticmethod
     def test_wait(file):

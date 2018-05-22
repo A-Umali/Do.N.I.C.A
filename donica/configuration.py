@@ -16,7 +16,7 @@ class Config:
         try:
             self.config.sections = ['DEFAULT']
             self.config['DEFAULT'] = {}
-            self.config['DEFAULT']['main_user'] = ''
+            self.config['DEFAULT']['main_user']
             self.config['DEFAULT']['device_type'] = str(self.device_type)
             with open(filename, 'w') as configfile:
                 self.config.write(configfile)
