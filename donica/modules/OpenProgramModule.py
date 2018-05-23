@@ -15,4 +15,4 @@ def handle(message):
         print('Found Mac')
 
 def is_valid(title):
-    return bool(re.search('open-program', title, re.I))
+    return bool(re.search('open.program', title, re.I))

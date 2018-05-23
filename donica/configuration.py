@@ -1,11 +1,12 @@
 import configparser
 import platform
+import os
 
 
 class Config:
     def __init__(self):
         print('Initialized Configuration file')
-        self.filename = 'config.cfg'
+        self.filename = os.path.abspath('config.cfg')
         self.config = configparser.ConfigParser()
         self.config.read(self.filename)
         self.sections = self.config.sections()

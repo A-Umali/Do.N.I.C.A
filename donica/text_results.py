@@ -8,6 +8,7 @@ import re
 
 class TextResult:
     def __init__(self):
+        print('Initializing Text Result class')
         self.session_client = dialogflow.SessionsClient()
         self.session = self.session_client.session_path("donica-d6a80", "38d9b5565227fa8e67d1cdf23cd82cae5dd9d782")
         self.speech = Speech()
@@ -16,13 +17,12 @@ class TextResult:
     def get_text_to_speech_google(self, responses, get_stream):
         try:
             num_chars_printed = 0
-
             for response in responses:
                 if not response.results:
                     continue
 
                 result = response.results[0]
-
+ 
                 if not result.alternatives:
                     continue
 
@@ -47,11 +47,12 @@ class TextResult:
                     self.module.query(intent_name.split(), get_text)
                     print('Fulfillment text: {}'.format(intent_name))
                     print('Response: {}'.format(dialog.query_result.fulfillment_text))
-                    if re.search('exit', intent_name, re.I):
-                        return get_stream.closed
-                    if re.search('emergency-exit', intent_name, re.I):
-                        sys.exit(0)
-                    self.speech.send_speak(dialog.query_result.fulfillment_text)
+                    if re.fullmatch('emergency.exit', intent_name, re.IGNORECASE):
+                        print('PROTOCOL: Emergency exit')
+                    if re.fullmatch('exit', intent_name, re.IGNORECASE):
+                        print('Closing')
+                        get_stream.closed = True
+                    break
 
         except grpc.RpcError as e:
             if e.code() not in (grpc.StatusCode.INVALID_ARGUMENT,
@@ -64,5 +65,6 @@ class TextResult:
             else:
                 if 'maximum allowed stream duration' not in details:
                     raise e
+
 
 

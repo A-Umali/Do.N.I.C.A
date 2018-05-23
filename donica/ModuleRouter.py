@@ -20,13 +20,9 @@ class ModuleRouter(object):
                 raise e
             else:
                 if hasattr(mod, 'TITLE'):
-                    print('MODULE ROUTER: Found module {} with title: {}'.format(name, mod.TITLE))
                     modules.append(mod)
                 else:
                     print('MODULE ROUTER: Skipping modules because of error')
-
-        modules.sort(key=lambda mods: mod.PRIORITY if hasattr(mods, 'PRIORITY')
-                     else 0, reverse=True)
         return modules
 
     def query(self, titles, message):

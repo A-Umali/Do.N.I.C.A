@@ -4,3 +4,7 @@ boto3
 awscli
 pygame
 speedtest-cli
+dialogflow
+pysoundfile
+enum34
+numpy

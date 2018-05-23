@@ -9,7 +9,6 @@ import sys
 
 class Speech(object):
     def __init__(self):
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:/Users/Redd/Downloads/service_account.json"
         self.session = boto3.Session(profile_name="AUmali")
         self.polly = self.session.client("polly")
 
@@ -21,17 +20,13 @@ class Speech(object):
                                                    VoiceId="Amy")
         try:
             # This is a short fix, should make another one later
-            output = os.path.join(gettempdir(), 'output.mp3')
+            output = os.path.join(gettempdir(), str(r1) + 'output.mp3')
             with open(output, 'wb') as f:
                 f.write(spoken_text['AudioStream'].read())
                 f.close()
             pygame.mixer.init()
             pygame.mixer.music.load(output)
             pygame.mixer.music.play()
-            while pygame.mixer.music.get_busy() is True:
-                print('busy')
-                continue
-            pygame.quit()
 
 
         except PermissionError as e:
@@ -39,7 +34,9 @@ class Speech(object):
 
     @staticmethod
     def speech_active():
-        return pygame.mixer.music.get_busy()
+        while pygame.mixer.get_busy() == True:
+            print('talking')
+        pass
 """
     @staticmethod
     def test_wait(file):

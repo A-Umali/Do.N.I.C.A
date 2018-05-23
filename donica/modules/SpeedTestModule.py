@@ -1,6 +1,6 @@
 import speedtest
 import re
-from math import expm1
+import time
 from donica.encode_speech import Speech
 
 TITLE = ['INTERNET-CONNECTION']
@@ -12,16 +12,15 @@ def handle(message):
     s.get_best_server()
     s.download()
     s.upload()
-    download_speed = s.results.download
-    upload_speed = s.results.upload
-    #Speech().send_speak('Your download speed is {}'.format(str(round([s.results.download].E[6], 3))))
-    Speech().send_speak('Your download speed is {}'.format(str(round(download_speed * (10**-6), 3))))
-    Speech().send_speak('And your upload speed is {}'.format(str(round(upload_speed * (10**-6), 3))))
-    #Speech().send_speak('Your download speed is {}'.format(str(round([download_speed].E[6], 2))))
-    results_dict = s.results.dict()
-    #print('Results: {}'.format(results_dict))
+    download_speed = str(round(s.results.download * (10**-6), 3))
+    upload_speed = str(round(s.results.upload * (10**-6), 3))
+    print('Your download speed is {} '.format(download_speed) +
+          'And your upload speed is {}'.format(upload_speed))
+
+    #Speech().send_speak('Your download speed is {}'.format(download_speed) +
+    #                    'And your upload speed is {}'.format(upload_speed))
 
 
 def is_valid(title):
-    return bool(re.search('internet-connection', title, re.I))
+    return bool(re.search('internet.connection', title, re.I))
 
