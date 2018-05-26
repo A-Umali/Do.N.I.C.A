@@ -22,7 +22,7 @@ class ModuleRouter(object):
                 if hasattr(mod, 'TITLE'):
                     modules.append(mod)
                 else:
-                    print('MODULE ROUTER: Skipping modules because of error')
+                    print('MODULE ROUTER: Skipping because could not find right format of {}'.format(name))
         return modules
 
     def query(self, titles, message):
@@ -30,9 +30,9 @@ class ModuleRouter(object):
             for title in titles:
                 if module.is_valid(title):
                     try:
-                        module.handle(message)
-                    except Exception:
-                        print('MODULE ROUTER: I had trouble with that operation')
+                        module.handle(title, message)
+                    except Exception as e:
+                        raise e
                     else:
                         print('MODULE ROUTER: Handling of phrase {} by module {} completed'.format(title,
                                                                                                    module.__name__))

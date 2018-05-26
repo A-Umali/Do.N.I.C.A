@@ -1,16 +1,17 @@
 import configparser
-import platform
 import os
+import sys
+import logging
 
 
 class Config:
     def __init__(self):
-        print('Initialized Configuration file')
+        logging.debug('Initialized Configuration file')
         self.filename = os.path.abspath('config.cfg')
         self.config = configparser.ConfigParser()
         self.config.read(self.filename)
         self.sections = self.config.sections()
-        self.device_type = platform.system()
+        self.device_type = sys.platform
         self.retrieve(self.filename)
 
     def retrieve(self, filename):

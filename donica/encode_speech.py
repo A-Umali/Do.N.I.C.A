@@ -1,10 +1,12 @@
 import boto3
 import os
-from tempfile import gettempdir
 import pygame
 import random
-import time
+from contextlib import closing
 import sys
+import time
+import subprocess
+import platform
 
 
 class Speech(object):
@@ -16,31 +18,35 @@ class Speech(object):
 
         r1 = random.randint(1, 10000000)
         spoken_text = self.polly.synthesize_speech(Text=text,
-                                                   OutputFormat="mp3",
+                                                   OutputFormat="ogg_vorbis",
                                                    VoiceId="Amy")
         try:
-            # This is a short fix, should make another one later
-            output = os.path.join(gettempdir(), str(r1) + 'output.mp3')
-            with open(output, 'wb') as f:
-                f.write(spoken_text['AudioStream'].read())
-                f.close()
+            output = os.path.abspath('output.ogg')
+            if 'AudioStream' in spoken_text:
+                with closing(spoken_text['AudioStream']) as stream:
+                    try:
+                        with open(output, 'wb') as f:
+                            f.write(stream.read())
+                    except IOError:
+                        sys.exit(0)
+                        raise e
+
+            else:
+                print('Could not stream audio')
+                sys.exit(0)
+            if platform.system() == "Windows":
+                os.startfile(output)
+            """
             pygame.mixer.init()
             pygame.mixer.music.load(output)
             pygame.mixer.music.play()
+            while pygame.mixer.music.get_busy() == True:
+                print('logging')
+                pass
+            pygame.mixer.quit()
+            time.sleep(2)
+            os.remove(output)
+            """
+        except PermissionError:
+            sys.exit(0)
 
-
-        except PermissionError as e:
-            print(e)
-
-    @staticmethod
-    def speech_active():
-        while pygame.mixer.get_busy() == True:
-            print('talking')
-        pass
-"""
-    @staticmethod
-    def test_wait(file):
-        audio_file = eyed3.load(file)
-        wait_period = audio_file.info.time_secs
-        time.sleep(wait_period+2)
-"""

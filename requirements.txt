@@ -1,10 +1,15 @@
+# Speech-To-Text
 google-cloud-speech>=0.34.0
-pyaudio>=0.2.11
-boto3
-awscli
-pygame
-speedtest-cli
 dialogflow
 pysoundfile
 enum34
 numpy
+pyaudio>=0.2.11
+
+# Text-To-Speech
+boto3
+awscli
+pygame
+
+# Misc.
+speedtest-cli
