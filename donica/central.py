@@ -63,8 +63,6 @@ class Central:
                 else:
                     pass
             while self.sleep_status == False and self.active_status == True:
-                if self.speech is False:
-                    print()
                 mic_manager = MicrophoneStream(MicrophoneStream.RATE, int(MicrophoneStream.RATE / 10))
                 try:
                     with mic_manager as stream:
